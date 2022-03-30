@@ -32,7 +32,7 @@ extern int listen_net() {
 }
 
 extern int accept_net(int listener) {
-
+	return accept(listener, NULL, NULL);
 }
 
 extern int connect_net() {
@@ -42,13 +42,17 @@ extern int connect_net() {
 	struct sockaddr_in addr;
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(8080);
-	addr.sin_addr.s_addr = htonl(INADDR_ANY);
+	addr.sin_addr.s_addr = inet_addr("127.0.0.1");
 
-	if (connect(conn, (struct sockaddr*)&conn, sizeof(conn)) != 0) {
+	if (connect(conn, (struct sockaddr*)&addr, sizeof(addr)) != 0) {
 		perror(" ✖ Error connect");
 		exit(0);
 	}
 	return conn;
+}
+
+extern int close_net(int listener) {
+	return close(listener);
 }
 
 extern void print_addr_net(struct sockaddr_in addr) {

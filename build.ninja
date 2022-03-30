@@ -1,0 +1,7 @@
+cflags = -w
+
+rule cc
+  command = gcc $cflags $in extclib/net.c -o $out 
+
+build builds/server: cc server.c
+build builds/client: cc client.c

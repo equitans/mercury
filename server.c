@@ -5,74 +5,44 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <pthread.h>
-
+//handle_client
 #include "extclib/net.h"
 
-void * AcceptClient(int s_sockap) {
-	int rc;
-	char buf[64];
-	
-	rc = send(s_sockap, " ✔ Connected", 12, 0);
-	if (rc <= 0) {
-		perror(" ✖ Error send");
-		exit(0);
-	}
-
-	while (1) {
-		rc = recv(s_sockap, buf, 64, 0);
-		if (rc <= 0) {
-			perror(" ✖ Error recv");
-			exit(0);
-		} else {
-			printf(" %s\n", buf);
-		}
-	}
-}
-
-
-
-int main() {
-	struct sockaddr_in local;
+struct client_sock
+{
 	struct sockaddr_in addr;
-	socklen_t t_addr = sizeof(addr);
+	char nickname[];
+};
 
-	int s_sockap, rc;
-	char buf [64];
-	
-	int s_sockfd = listen_net();
-	
-	while (1) {
-		s_sockap = accept(s_sockfd, (struct sockaddr *)&addr, &t_addr);
-		if (s_sockap < 0) {
-			perror(" ✖ Error accept");
-			exit(4);
+
+
+int main() {	
+	char buf[256];
+
+	int listener = listen_net();
+
+	while (1)
+	{
+		int client = accept(listener, NULL, NULL);
+		if(client < 0)
+        {
+            perror("accept");
+            exit(3);
+        }
+		//if (client < 0) printf(" • Connection.");
+		while (1)
+		{
+			int bytes_read = recv(client, buf, sizeof(buf), 0);
+            if(bytes_read <= 0) break;
+			printf(" %s\n", buf);
+            
+			//if(recv(client, buf, sizeof(buf), 0) <= 0) break;
+			//printf(" « %s\t", buf);
 		}
-
-		print_addr_net(addr);
-
-		pthread_t thread;
-	//	int s_sockap_p = &s_sockap;
-		//pthread_create(&thread, NULL, AcceptClient, s_sockap_p);
-		AcceptClient(s_sockap);	
-
-		/*
-		while(1) {
-			rc = recv(s_sockap, buf, 64, 0);
-			if (rc <= 0) {
-				perror(" ✖ Error recv");
-				exit(5);
-			}
-
-			printf(" « %s\n", buf);
-			rc = send(s_sockap, "2", 1, 0);
-			if (rc <= 0) {
-				perror(" ✖ Error send");
-				exit(6);
-			}
-		}
-		*/
-
+		close_net(listener);
+		
 	}
+	
 
 
 
