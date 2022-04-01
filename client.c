@@ -20,6 +20,10 @@ int main() {
 		if(send(conn, buf, sizeof(buf), 0) <= 0) {
 			perror(" ✖ Error send");
 		}
+		//if(recv(conn, buf, 1, 0) <= 0) {
+		//	perror(" Error Crecv");
+		//}
+		//printf("%s\n", buf);
 	}
 	
 
